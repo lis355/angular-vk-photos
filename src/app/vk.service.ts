@@ -3,6 +3,7 @@ import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import VK from "./vk";
 
 export interface Profile {
+	id: number,
 	name: string,
 	avatarUrl: string
 }
@@ -24,6 +25,7 @@ export class VkService {
 	private client_id = 6752555;
 	private vk = new VK(this.client_id);
 	private authenticated = false;
+	private profile: Profile;
 
 	loading = false;
 	error = false;
@@ -39,7 +41,7 @@ export class VkService {
 	}
 
 	async login(access: Access): Promise<void> {
-		const status = await this.vk.login();
+		const status = await this.vk.login(access);
 		this.authenticated = Boolean(status.session);
 	}
 
@@ -49,10 +51,21 @@ export class VkService {
 	}
 
 	async getProfile(): Promise<Profile> {
+		if (this.profile) {
+			return this.profile;
+		}
+
 		const result = (await this.vk.call("users.get", {fields: "photo_100"}))[0];
-		return {
+		this.profile = {
+			id: result.id,
 			name: `${result.first_name} ${result.last_name}`,
 			avatarUrl: result.photo_100
 		};
+
+		return this.profile;
+	}
+
+	async call(method: string, params?: {}): Promise<any> {
+		return await this.vk.call(method, params);
 	}
 }
