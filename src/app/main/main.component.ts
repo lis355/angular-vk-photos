@@ -12,6 +12,6 @@ export class MainComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.vkService.auth();
+		this.vkService.start();
 	}
 }
