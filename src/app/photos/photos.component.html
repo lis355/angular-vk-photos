@@ -1,6 +1,5 @@
-<ng-container *ngIf="photo">
-	<div class="photo-wrapper">
-		<img src={{photo.sizes[0].url}}/>
-		<p>{{photo.text}}</p>
+<ng-container *ngIf="photos">
+	<div class="d-flex">
+		<app-photo *ngFor="let photo of photos" [photo]="photo"></app-photo>
 	</div>
 </ng-container>

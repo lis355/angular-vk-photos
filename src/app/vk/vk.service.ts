@@ -55,11 +55,12 @@ export class VkService {
 			return this.profile;
 		}
 
-		const result = (await this.vk.call("users.get", {fields: "photo_100"}))[0];
+		const result = await this.vk.call("users.get", {fields: "photo_100"});
+		const user = result[0];
 		this.profile = {
-			id: result.id,
-			name: `${result.first_name} ${result.last_name}`,
-			avatarUrl: result.photo_100
+			id: user.id,
+			name: `${user.first_name} ${user.last_name}`,
+			avatarUrl: user.photo_100
 		};
 
 		return this.profile;

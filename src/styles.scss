@@ -4,13 +4,12 @@
 .page {
 	width: 100%;
 	height: 100%;
-
-	@extend .d-flex;
-
-	justify-content: center;
-	align-items: center;
 }
 
 html, body {
 	@extend .page;
 }
+
+//div {
+//  border: 1px rgba(255, 0, 0, 0.16) solid;
+//}

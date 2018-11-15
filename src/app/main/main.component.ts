@@ -1,10 +1,10 @@
 import {Component, OnInit} from "@angular/core";
-import {VkService, Profile, Access} from "../vk.service";
+import {VkService, Profile, Access} from "../vk/vk.service";
 
 @Component({
 	selector: "app-main",
-	templateUrl: "main.component.html",
-	styleUrls: ["main.component.scss"]
+	templateUrl: "./main.component.html",
+	styleUrls: ["./main.component.scss"]
 })
 export class MainComponent implements OnInit {
 	loading = true;

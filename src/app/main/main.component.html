@@ -1,14 +1,28 @@
-<div class="page" >
-	<ng-container *ngIf="loading">
-		loading
-	</ng-container>
-	<ng-container *ngIf="needLogin">
-		<button type="button" class="btn btn-primary" (click)="handleLogin()">Log In</button>
-	</ng-container>
-	<div *ngIf="profile">
-		<img src={{profile.avatarUrl}} />
-		<span>{{profile.name}}</span>
-		<button type="button" class="btn btn-primary" (click)="handleLogout()">Log Out</button>
-		<app-photos></app-photos>
+<div class="page">
+	<div *ngIf="loading" class="page d-flex justify-content-center align-items-center">
+		<div class="loader"></div>
+	</div>
+	<div class="d-flex flex-column align-items-center">
+		<div class="card mt-3">
+
+			<ng-container *ngIf="needLogin">
+				<button type="button" class="btn btn-primary" (click)="handleLogin()">Log In</button>
+			</ng-container>
+
+			<ng-container *ngIf="profile">
+				<div class="d-flex">
+					<img src={{profile.avatarUrl}} class="m-3"/>
+					<div class="d-flex flex-column justify-content-center">
+						<h5>{{profile.name}}</h5>
+					</div>
+				</div>
+				<hr class=""/>
+				<button type="button" class="btn btn-primary" (click)="handleLogout()">Log Out</button>
+			</ng-container>
+
+		</div>
+
+		<app-photos *ngIf="profile"></app-photos>
+
 	</div>
 </div>
