@@ -15,8 +15,12 @@ export class MainComponent implements OnInit {
 	}
 
 	async ngOnInit() {
+		this.loading = true;
+
 		await this.vkService.start();
 		await this.processProfile();
+
+		this.loading = false;
 	}
 
 	async processProfile() {
@@ -33,13 +37,21 @@ export class MainComponent implements OnInit {
 	}
 
 	async handleLogin() {
+		this.loading = true;
+
 		await this.vkService.login(Access.PHOTOS);
 		await this.processProfile();
+
+		this.loading = false;
 	}
 
 	async handleLogout() {
+		this.loading = true;
+
 		await this.vkService.logout();
 		this.profile = null;
 		await this.processProfile();
+
+		this.loading = false;
 	}
 }

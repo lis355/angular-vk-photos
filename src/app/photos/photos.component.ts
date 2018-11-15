@@ -1,5 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {VkService} from "../vk/vk.service";
+import {load} from "@angular/core/src/render3";
 
 @Component({
 	selector: "app-photos",
@@ -7,13 +8,15 @@ import {VkService} from "../vk/vk.service";
 	styleUrls: ["./photos.component.scss"]
 })
 export class PhotosComponent implements OnInit {
+	loading = false;
 	photos;
 
 	constructor(private vkService: VkService) {
 	}
 
 	async ngOnInit() {
-		await this.getPhotos();
+		this.loading = true;
+		//await this.getPhotos();
 	}
 
 	async getPhotos() {

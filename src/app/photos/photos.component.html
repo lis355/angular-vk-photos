@@ -1,5 +1,6 @@
-<ng-container *ngIf="photos">
-	<div class="d-flex">
-		<app-photo *ngFor="let photo of photos" [photo]="photo"></app-photo>
-	</div>
-</ng-container>
+<div *ngIf="!photos" class="page d-flex justify-content-center align-items-center">
+	<div class="loader"></div>
+</div>
+<div *ngIf="photos" class="d-flex justify-content-center align-items-center flex-wrap mt-3">
+	<app-photo *ngFor="let photo of photos" [photo]="photo"></app-photo>
+</div>

@@ -35,6 +35,13 @@ export class VkService {
 	constructor(private http: HttpClient) {
 	}
 
+	// DEBUG
+	async sleep(ms: number): Promise<void> {
+		return new Promise<void>(resolve => {
+			setTimeout(() => resolve(), ms);
+		})
+	}
+
 	async start(): Promise<void> {
 		const status = await this.vk.getLoginStatus();
 		this.authenticated = Boolean(status.session);
@@ -51,7 +58,8 @@ export class VkService {
 	}
 
 	async getProfile(): Promise<Profile> {
-		if (this.profile) {
+		if (this.authenticated
+			&& this.profile) {
 			return this.profile;
 		}
 
@@ -67,6 +75,7 @@ export class VkService {
 	}
 
 	async call(method: string, params?: {}): Promise<any> {
+		await this.sleep(3000);
 		return await this.vk.call(method, params);
 	}
 }
