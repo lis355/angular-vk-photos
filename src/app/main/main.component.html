@@ -1,25 +1,23 @@
-<div class="page">
-	<div *ngIf="loading" class="page d-flex justify-content-center align-items-center">
-		<div class="loader"></div>
-	</div>
-	<div *ngIf="needLogin" class="page d-flex justify-content-center align-items-center">
+<div *ngIf="loading; else loadedBlock" class="flex-fill d-flex justify-content-center align-self-center">
+	<div class="loader"></div>
+</div>
+<ng-template #loadedBlock>
+	<div *ngIf="needLogin" class="flex-fill d-flex justify-content-center align-self-center">
 		<div class="card">
 			<button type="button" class="btn btn-success m-3" (click)="handleLogin()">Log In</button>
 		</div>
 	</div>
-	<div *ngIf="profile" class="container">
-		<div class="d-flex flex-column align-items-center">
-			<div class="card mt-3">
-				<div class="d-flex p-3">
-					<img src={{profile.avatarUrl}} class="avatar"/>
-					<div class="d-flex flex-column justify-content-center ml-3">
-						<h5>{{profile.name}}</h5>
-					</div>
+	<div *ngIf="profile" class="flex-fill container d-flex flex-column align-items-center">
+		<div class="card flex-shrink-0 mt-3">
+			<div class="d-flex p-3">
+				<img src={{profile.avatarUrl}} class="avatar"/>
+				<div class="d-flex flex-column justify-content-center ml-3">
+					<h5>{{profile.name}}</h5>
 				</div>
-				<hr class="m-0 p-0"/>
-				<button type="button" class="btn btn-success m-3" (click)="handleLogout()">Log Out</button>
 			</div>
-			<app-photos></app-photos>
+			<hr class="m-0 p-0"/>
+			<button type="button" class="btn btn-success m-3" (click)="handleLogout()">Log Out</button>
 		</div>
+		<app-photos class="flex-fill d-flex"></app-photos>
 	</div>
-</div>
+</ng-template>

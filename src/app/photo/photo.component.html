@@ -1,3 +1,12 @@
-<div class="photo-container card m-3 p-3" (click)="handleClick()">
-	<img src={{photo.sizes[0].url}} class="rounded"/>
+<div class="card d-flex flex-column justify-content-center m-3 p-3">
+	<img src={{getPhotoSizeInfo().url}} width={{getPhotoSizeInfo().width}} height={{getPhotoSizeInfo().height}}
+		 class="rounded photo-clickable align-self-center" (click)="handleImageClick()"/>
+	<div *ngIf="!preview">
+		<div class="input-group mt-3">
+			<input type="text" class="form-control" placeholder="Caption" [(ngModel)]="photo.text" (change)="handleChange">
+			<div class="input-group-append">
+				<button type="button" class="btn btn-outline-success" (click)="handleSetCaption()">Change text</button>
+			</div>
+		</div>
+	</div>
 </div>

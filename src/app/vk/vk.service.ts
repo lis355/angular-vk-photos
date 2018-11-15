@@ -75,7 +75,6 @@ export class VkService {
 	}
 
 	async call(method: string, params?: {}): Promise<any> {
-		await this.sleep(3000);
 		return await this.vk.call(method, params);
 	}
 }
