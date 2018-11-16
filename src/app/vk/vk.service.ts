@@ -22,7 +22,7 @@ export enum Access {
 	providedIn: "root"
 })
 export class VkService {
-	private client_id = 6752555;
+	private client_id = 6753525;
 	private vk = new VK(this.client_id);
 	private authenticated = false;
 	private profile: Profile;
