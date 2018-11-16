@@ -1,5 +1,5 @@
-import {Component, OnInit} from "@angular/core";
-import {VkService} from "../vk/vk.service";
+import {Component, Input, OnInit} from "@angular/core";
+import {Profile, VkService} from "../vk/vk.service";
 
 @Component({
 	selector: "app-photos",
@@ -7,6 +7,8 @@ import {VkService} from "../vk/vk.service";
 	styleUrls: ["./photos.component.scss"]
 })
 export class PhotosComponent implements OnInit {
+	@Input() profile: Profile;
+
 	photos;
 	selectedPhoto;
 
@@ -18,7 +20,7 @@ export class PhotosComponent implements OnInit {
 	}
 
 	async getPhotos() {
-		const result = await this.vkService.call("photos.getAll", {owner_id: (await this.vkService.getProfile()).id});
+		const result = await this.vkService.call("photos.getAll", {owner_id: this.profile.id});
 		this.photos = result.items;
 	}
 
