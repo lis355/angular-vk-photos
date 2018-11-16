@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "ng serve",
 		"start": "node server.js",
-		"build": "ng build --prod --aot"
+		"build": "ng build --prod --aot",
+		"postinstall": "yarn run build"
 	},
 	"dependencies": {
 		"@angular-devkit/build-angular": "^0.10.6",
