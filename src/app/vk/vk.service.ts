@@ -53,12 +53,12 @@ export class VkService {
 	}
 
 	async login(access: Access): Promise<void> {
-		const status: any = await this.vk.login(access);
+		const status: any = await this.VKLogin(access);
 		this.authenticated = Boolean(status.session);
 	}
 
 	async logout(): Promise<void> {
-		await this.vk.logout();
+		await this.VKLogout();
 		this.authenticated = false;
 	}
 
