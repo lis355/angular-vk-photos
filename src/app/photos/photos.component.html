@@ -1,9 +1,11 @@
 <div *ngIf="!photos; else loadedBlock" class="flex-fill d-flex justify-content-center align-self-center">
 	<div class="loader"></div>
 </div>
-<div #loadedBlock *ngIf="selectedPhoto; else photosBlock" class="d-flex justify-content-center align-items-center flex-wrap mt-3">
-	<app-photo [photo]="selectedPhoto" (photoClick)="handleClick(null)"></app-photo>
-</div>
+<ng-template #loadedBlock>
+	<div *ngIf="selectedPhoto; else photosBlock" class="d-flex justify-content-center align-items-center flex-wrap mt-3">
+		<app-photo [photo]="selectedPhoto" (photoClick)="handleClick(null)"></app-photo>
+	</div>
+</ng-template>
 <ng-template #photosBlock>
 	<div *ngIf="photos" class="d-flex justify-content-center align-items-center flex-wrap mt-3">
 		<app-photo *ngFor="let photo of photos" [photo]="photo" [preview]="true" (photoClick)="handleClick(photo)"></app-photo>
