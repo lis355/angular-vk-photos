@@ -3,7 +3,7 @@
 		 class="rounded photo-clickable align-self-center" (click)="handleImageClick()"/>
 	<div *ngIf="!preview">
 		<div class="input-group mt-3">
-			<input type="text" class="form-control" placeholder="Caption" [(ngModel)]="photo.text" (change)="handleChange">
+			<input type="text" class="form-control" placeholder="Caption" [(ngModel)]="photo.text">
 			<div class="input-group-append">
 				<button type="button" class="btn btn-outline-success" (click)="handleSetCaption()">Change text</button>
 			</div>

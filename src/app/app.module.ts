@@ -18,8 +18,6 @@ import {PhotoComponent} from "./photo/photo.component";
 		PhotoComponent
 	],
 	imports: [
-		HttpClientModule,
-		HttpClientJsonpModule,
 		BrowserModule,
 		FormsModule,
 		AppRoutingModule

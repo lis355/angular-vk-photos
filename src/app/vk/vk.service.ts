@@ -1,5 +1,4 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpRequest, HttpResponse} from "@angular/common/http";
 import VK from "./vk";
 
 export interface Profile {
@@ -25,21 +24,10 @@ export class VkService {
 	private client_id = 6753525;
 	private vk = new VK(this.client_id);
 	private authenticated = false;
-	private profile: Profile;
-
-	loading = false;
-	error = false;
 
 	isAuthenticated = () => this.authenticated;
 
-	constructor(private http: HttpClient) {
-	}
-
-	// DEBUG
-	async sleep(ms: number): Promise<void> {
-		return new Promise<void>(resolve => {
-			setTimeout(() => resolve(), ms);
-		})
+	constructor() {
 	}
 
 	async start(): Promise<void> {
@@ -58,20 +46,13 @@ export class VkService {
 	}
 
 	async getProfile(): Promise<Profile> {
-		if (this.authenticated
-			&& this.profile) {
-			return this.profile;
-		}
-
 		const result = await this.vk.call("users.get", {fields: "photo_100"});
 		const user = result[0];
-		this.profile = {
+		return {
 			id: user.id,
 			name: `${user.first_name} ${user.last_name}`,
 			avatarUrl: user.photo_100
 		};
-
-		return this.profile;
 	}
 
 	async call(method: string, params?: {}): Promise<any> {
