@@ -1,5 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {VkService, Profile, Access} from "../vk/vk.service";
+import {tap} from "rxjs/operators";
 
 @Component({
 	selector: "app-main",
@@ -7,7 +8,7 @@ import {VkService, Profile, Access} from "../vk/vk.service";
 	styleUrls: ["./main.component.scss"]
 })
 export class MainComponent implements OnInit {
-	loading = true;
+	loading = 0;
 	profile: Profile;
 	needLogin = false;
 
@@ -15,43 +16,41 @@ export class MainComponent implements OnInit {
 	}
 
 	async ngOnInit() {
-		this.loading = true;
-
-		await this.vkService.start();
-		await this.processProfile();
-
-		this.loading = false;
+		this.vkService.start()
+			.subscribe(x => this.processProfile();
 	}
 
-	async processProfile() {
-		this.loading = true;
+	processProfile() {
+		this.loading++;
 
 		if (this.vkService.isAuthenticated()) {
 			this.needLogin = false;
-			this.profile = await this.vkService.getProfile();
+			this.vkService.getProfile()
+				.subscribe(profile => this.profile = profile);
 		} else {
 			this.needLogin = true;
 		}
 
-		this.loading = false;
+		this.loading--;
 	}
 
 	async handleLogin() {
 		this.loading = true;
 
-		await this.vkService.login(Access.PHOTOS);
-		await this.processProfile();
+		this.vkService.login(Access.PHOTOS)
+			.subscribe(status => this.processProfile());
 
 		this.loading = false;
 	}
 
 	async handleLogout() {
-		this.loading = true;
+		//this.loading = true;
 
-		await this.vkService.logout();
-		this.profile = null;
-		await this.processProfile();
+		await this.vkService.logout().pipe(
+			tap(x => this.profile = null),
+			tap(x => this.processProfile())
+		);
 
-		this.loading = false;
+		//this.loading = false;
 	}
 }

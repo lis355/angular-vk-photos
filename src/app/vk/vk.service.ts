@@ -1,4 +1,6 @@
 import {Injectable} from "@angular/core";
+import {Observable, from} from "rxjs";
+import {map, tap} from "rxjs/operators";
 
 export interface Profile {
 	id: number,
@@ -32,38 +34,35 @@ export class VkService {
 		this.vk.init({apiId: VkService.client_id});
 	}
 
-	private VKGetLoginStatus = async () =>
-		new Promise(resolve => {
-			this.vk.Auth.getLoginStatus(response => resolve(response));
-		});
+	private VKGetLoginStatus = (): Observable<any> => from(new Promise(resolve => {
+		this.vk.Auth.getLoginStatus(response => resolve(response));
+	}));
 
-	private VKLogin = async (access: Access) =>
-		new Promise(resolve => {
-			this.vk.Auth.login(response => resolve(response), access);
-		});
+	private VKLogin = (access: Access): Observable<any> => from(new Promise(resolve => {
+		this.vk.Auth.login(response => resolve(response), access);
+	}));
 
-	private VKLogout = async () =>
-		new Promise(resolve => {
-			this.vk.Auth.logout(response => resolve(response));
-		});
+	private VKLogout = (): Observable<any> => from(new Promise(resolve => {
+		this.vk.Auth.logout(response => resolve(response));
+	}));
 
-	async start(): Promise<void> {
-		const status: any = await this.VKGetLoginStatus();
-		this.authenticated = Boolean(status.session);
+	start(): Observable<any> {
+		return this.VKGetLoginStatus().pipe(
+			tap(status => this.authenticated = Boolean(status.session)));
 	}
 
-	async login(access: Access): Promise<void> {
-		const status: any = await this.VKLogin(access);
-		this.authenticated = Boolean(status.session);
+	login(access: Access): Observable<any> {
+		return this.VKLogin(access).pipe(
+			tap(status => this.authenticated = Boolean(status.session)));
 	}
 
-	async logout(): Promise<void> {
-		await this.VKLogout();
-		this.authenticated = false;
+	logout(): Observable<any> {
+		return this.VKLogout().pipe(
+			tap(status => this.authenticated = false));
 	}
 
-	call = async (method: string, params?: {}): Promise<any> =>
-		new Promise((resolve, reject) => {
+	call(method: string, params?: {}): Observable<any> {
+		return from(new Promise((resolve, reject) => {
 			console.log(`[VkService]: Call ${method}`, params);
 			this.vk.Api.call(method, {...params, v: VkService.apiVersion}, response => {
 				if (response.response)
@@ -71,15 +70,18 @@ export class VkService {
 				else
 					reject(response);
 			});
-		});
+		}));
+	};
 
-	async getProfile(): Promise<Profile> {
-		const result = await this.call("users.get", {fields: "photo_100"});
-		const user = result[0];
-		return {
-			id: user.id,
-			name: `${user.first_name} ${user.last_name}`,
-			avatarUrl: user.photo_100
-		};
+	getProfile(): Observable<Profile> {
+		return this.call("users.get", {fields: "photo_100"}).pipe(
+			map(result => result[0]),
+			map(user => {
+				return {
+					id: user.id,
+					name: `${user.first_name} ${user.last_name}`,
+					avatarUrl: user.photo_100
+				};
+			}));
 	}
 }
