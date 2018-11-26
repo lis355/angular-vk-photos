@@ -1,5 +1,6 @@
 import {Component, EventEmitter, OnInit, Input, Output} from "@angular/core";
 import {VkService} from "../vk/vk.service";
+import {flatMap} from "rxjs/operators";
 
 @Component({
 	selector: "app-photo",
@@ -19,8 +20,9 @@ export class PhotoComponent implements OnInit {
 
 	getPhotoSizeInfo() {
 		let size = this.photo.sizes.find(item => item.type === (this.preview ? "s" : "y"));
-		if (!size)
+		if (!size) {
 			size = this.photo.sizes[0];
+		}
 
 		return size;
 	}
@@ -29,11 +31,14 @@ export class PhotoComponent implements OnInit {
 		this.photoClick.emit();
 	}
 
-	async handleSetCaption() {
-		this.vkService.call("photos.edit", {
-			owner_id: (await this.vkService.getProfile()).id,
-			photo_id: this.photo.id,
-			caption: this.photo.text
-		});
+	handleSetCaption() {
+		// TODO remove getProfile call
+		this.vkService.getProfile().pipe(
+			flatMap(profile => this.vkService.call("photos.edit", {
+				owner_id: profile.id,
+				photo_id: this.photo.id,
+				caption: this.photo.text
+			}))
+		).subscribe();
 	}
 }

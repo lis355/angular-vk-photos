@@ -1,6 +1,8 @@
 import {Component, OnInit} from "@angular/core";
 import {VkService, Profile, Access} from "../vk/vk.service";
-import {tap} from "rxjs/operators";
+import {Observable} from "rxjs";
+import {flatMap, tap} from "rxjs/operators";
+import {fromFunction} from "../../utils/rx";
 
 @Component({
 	selector: "app-main",
@@ -8,49 +10,50 @@ import {tap} from "rxjs/operators";
 	styleUrls: ["./main.component.scss"]
 })
 export class MainComponent implements OnInit {
-	loading = 0;
+	loading;
+	needLogin;
 	profile: Profile;
-	needLogin = false;
 
 	constructor(private vkService: VkService) {
 	}
 
-	async ngOnInit() {
-		this.vkService.start()
-			.subscribe(x => this.processProfile();
+	setLoading(loading) {
+		this.loading = loading;
 	}
 
-	processProfile() {
-		this.loading++;
+	ngOnInit() {
+		this.setLoading(true);
 
-		if (this.vkService.isAuthenticated()) {
-			this.needLogin = false;
-			this.vkService.getProfile()
-				.subscribe(profile => this.profile = profile);
-		} else {
-			this.needLogin = true;
-		}
-
-		this.loading--;
+		this.vkService.start().pipe(
+			flatMap(authenticated => authenticated ? this.getProfile() : fromFunction(() => this.needLogin = true))
+		).subscribe(() => this.setLoading(false));
 	}
 
-	async handleLogin() {
-		this.loading = true;
-
-		this.vkService.login(Access.PHOTOS)
-			.subscribe(status => this.processProfile());
-
-		this.loading = false;
-	}
-
-	async handleLogout() {
-		//this.loading = true;
-
-		await this.vkService.logout().pipe(
-			tap(x => this.profile = null),
-			tap(x => this.processProfile())
+	getProfile(): Observable<any> {
+		return this.vkService.getProfile().pipe(
+			tap(profile => {
+				this.profile = profile;
+				this.needLogin = false;
+			})
 		);
+	}
 
-		//this.loading = false;
+	handleLogin() {
+		this.setLoading(true);
+
+		this.vkService.login(Access.PHOTOS).pipe(
+			flatMap(authenticated => authenticated ? this.getProfile() : fromFunction(() => this.needLogin = true))
+		).subscribe(() => this.setLoading(false));
+	}
+
+	handleLogout() {
+		this.setLoading(true);
+
+		this.vkService.logout()
+			.subscribe(() => {
+				this.setLoading(false);
+				this.profile = null;
+				this.needLogin = true;
+			});
 	}
 }

@@ -15,13 +15,13 @@ export class PhotosComponent implements OnInit {
 	constructor(private vkService: VkService) {
 	}
 
-	async ngOnInit() {
-		await this.getPhotos();
+	ngOnInit() {
+		this.getPhotos();
 	}
 
-	async getPhotos() {
-		const result = await this.vkService.call("photos.getAll", {owner_id: this.profile.id});
-		this.photos = result.items;
+	getPhotos() {
+		this.vkService.call("photos.getAll", {owner_id: this.profile.id})
+			.subscribe(result => this.photos = result.items);
 	}
 
 	handleClick(photo) {

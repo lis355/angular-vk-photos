@@ -48,12 +48,16 @@ export class VkService {
 
 	start(): Observable<any> {
 		return this.VKGetLoginStatus().pipe(
-			tap(status => this.authenticated = Boolean(status.session)));
+			tap(status => this.authenticated = Boolean(status.session)),
+			map(() => this.authenticated)
+		);
 	}
 
 	login(access: Access): Observable<any> {
 		return this.VKLogin(access).pipe(
-			tap(status => this.authenticated = Boolean(status.session)));
+			tap(status => this.authenticated = Boolean(status.session)),
+			map(() => this.authenticated)
+		);
 	}
 
 	logout(): Observable<any> {
@@ -65,10 +69,11 @@ export class VkService {
 		return from(new Promise((resolve, reject) => {
 			console.log(`[VkService]: Call ${method}`, params);
 			this.vk.Api.call(method, {...params, v: VkService.apiVersion}, response => {
-				if (response.response)
+				if (response.response) {
 					resolve(response.response);
-				else
+				} else {
 					reject(response);
+				}
 			});
 		}));
 	};
