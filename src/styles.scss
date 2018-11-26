@@ -15,7 +15,7 @@ body {
   height: 45px;
   border-radius: 100%;
   background-color: $green;
-  animation: bounce 1s ease-in-out infinite;
+  animation: bounce 1s ease-in-out infinite, color-dance 4s ease-in-out infinite;
 }
 
 @keyframes bounce {
@@ -25,5 +25,23 @@ body {
 
   50% {
     transform: scale(1.0);
+  }
+}
+
+@keyframes color-dance {
+  0%, 100% {
+    background-color: $green;
+  }
+
+  25% {
+    background-color: $orange;
+  }
+
+  50% {
+    background-color: $yellow;
+  }
+
+  75% {
+    background-color: $blue;
   }
 }

@@ -32,13 +32,7 @@ export class PhotoComponent implements OnInit {
 	}
 
 	handleSetCaption() {
-		// TODO remove getProfile call
-		this.vkService.getProfile().pipe(
-			flatMap(profile => this.vkService.call("photos.edit", {
-				owner_id: profile.id,
-				photo_id: this.photo.id,
-				caption: this.photo.text
-			}))
-		).subscribe();
+		this.vkService.setPhotoCaption(this.photo.id, this.photo.text)
+			.subscribe();
 	}
 }

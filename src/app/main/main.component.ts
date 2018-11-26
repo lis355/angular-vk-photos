@@ -1,8 +1,9 @@
 import {Component, OnInit} from "@angular/core";
-import {VkService, Profile, Access} from "../vk/vk.service";
 import {Observable} from "rxjs";
 import {flatMap, tap} from "rxjs/operators";
 import {fromFunction} from "../../utils/rx";
+import {VkService, Profile} from "../vk/vk.service";
+import {Access} from "../vk/vk-native.service";
 
 @Component({
 	selector: "app-main",
@@ -30,7 +31,7 @@ export class MainComponent implements OnInit {
 	}
 
 	getProfile(): Observable<any> {
-		return this.vkService.getProfile().pipe(
+		return this.vkService.getMyProfile().pipe(
 			tap(profile => {
 				this.profile = profile;
 				this.needLogin = false;

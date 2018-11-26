@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
-import {Observable, from} from "rxjs";
-import {map, tap} from "rxjs/operators";
+import {Observable, of} from "rxjs";
+import {flatMap, map, tap} from "rxjs/operators";
+import {VkNativeService, Access} from "./vk-native.service";
 
 export interface Profile {
 	id: number,
@@ -8,85 +9,60 @@ export interface Profile {
 	avatarUrl: string
 }
 
-export enum Access {
-	AUDIO = 8,
-	FRIENDS = 2,
-	MATCHES = 32,
-	PHOTOS = 4,
-	QUESTIONS = 64,
-	VIDEO = 16,
-	WIKI = 128,
-}
-
-@Injectable({
-	providedIn: "root"
-})
+@Injectable()
 export class VkService {
-	private static client_id = 6753525;
-	private static apiVersion = "5.87";
-	private vk;
-	private authenticated = false;
+	private profile: Profile;
 
-	isAuthenticated = () => this.authenticated;
-
-	constructor() {
-		this.vk = window["VK"];
-		this.vk.init({apiId: VkService.client_id});
+	constructor(private vkNativeService: VkNativeService) {
 	}
 
-	private VKGetLoginStatus = (): Observable<any> => from(new Promise(resolve => {
-		this.vk.Auth.getLoginStatus(response => resolve(response));
-	}));
-
-	private VKLogin = (access: Access): Observable<any> => from(new Promise(resolve => {
-		this.vk.Auth.login(response => resolve(response), access);
-	}));
-
-	private VKLogout = (): Observable<any> => from(new Promise(resolve => {
-		this.vk.Auth.logout(response => resolve(response));
-	}));
-
 	start(): Observable<any> {
-		return this.VKGetLoginStatus().pipe(
-			tap(status => this.authenticated = Boolean(status.session)),
-			map(() => this.authenticated)
-		);
+		return this.vkNativeService.start();
 	}
 
 	login(access: Access): Observable<any> {
-		return this.VKLogin(access).pipe(
-			tap(status => this.authenticated = Boolean(status.session)),
-			map(() => this.authenticated)
-		);
+		return this.vkNativeService.login(access);
 	}
 
 	logout(): Observable<any> {
-		return this.VKLogout().pipe(
-			tap(status => this.authenticated = false));
+		return this.vkNativeService.logout().pipe(
+			tap(() => this.profile = null)
+		);
 	}
 
-	call(method: string, params?: {}): Observable<any> {
-		return from(new Promise((resolve, reject) => {
-			console.log(`[VkService]: Call ${method}`, params);
-			this.vk.Api.call(method, {...params, v: VkService.apiVersion}, response => {
-				if (response.response) {
-					resolve(response.response);
-				} else {
-					reject(response);
-				}
-			});
-		}));
-	};
+	getMyProfile(): Observable<Profile> {
+		if (this.profile) {
+			return of(this.profile);
+		} else {
+			return this.vkNativeService.call("users.get", {fields: "photo_100"}).pipe(
+				map(result => result[0]),
+				map(user => {
+					return {
+						id: user.id,
+						name: `${user.first_name} ${user.last_name}`,
+						avatarUrl: user.photo_100
+					};
+				}),
+				tap(profile => this.profile = profile)
+			);
+		}
+	}
 
-	getProfile(): Observable<Profile> {
-		return this.call("users.get", {fields: "photo_100"}).pipe(
-			map(result => result[0]),
-			map(user => {
-				return {
-					id: user.id,
-					name: `${user.first_name} ${user.last_name}`,
-					avatarUrl: user.photo_100
-				};
-			}));
+	getPhotos() {
+		return this.getMyProfile().pipe(
+			flatMap(profile => this.vkNativeService.call("photos.getAll", {owner_id: profile.id}).pipe(
+				map(result => result.items)
+			))
+		);
+	}
+
+	setPhotoCaption(photoId: number, caption: string) {
+		return this.getMyProfile().pipe(
+			flatMap(profile => this.vkNativeService.call("photos.edit", {
+				owner_id: profile.id,
+				photo_id: photoId,
+				caption: caption
+			}))
+		);
 	}
 }

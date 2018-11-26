@@ -20,8 +20,8 @@ export class PhotosComponent implements OnInit {
 	}
 
 	getPhotos() {
-		this.vkService.call("photos.getAll", {owner_id: this.profile.id})
-			.subscribe(result => this.photos = result.items);
+		this.vkService.getPhotos()
+			.subscribe(list => this.photos = list);
 	}
 
 	handleClick(photo) {
